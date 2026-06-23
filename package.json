@@ -1,0 +1,29 @@
+{
+  "name": "upf-ai26-sistema-multiagente",
+  "version": "1.0.0",
+  "description": "Sistema Multiagente para Previsão de Partidas de Futebol",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "pnpm run docker:infra && node --watch --import tsx src/index.ts",
+    "build": "tsc",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:build": "docker compose up -d --build",
+    "docker:infra": "docker compose up --wait ollama chromadb ollama-init",
+    "docker:cli": "docker attach multiagent_app"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^5.3.8",
+    "@modelcontextprotocol/sdk": "^1.0.1",
+    "chromadb": "^1.9.4",
+    "dotenv": "^16.4.5",
+    "ollama": "^0.5.11"
+  },
+  "devDependencies": {
+    "@types/node": "^22.1.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "pnpm@10.30.3+sha512.c961d1e0a2d8e354ecaa5166b822516668b7f44cb5bd95122d590dd81922f606f5473b6d23ec4a5be05e7fcd18e8488d47d978bbe981872f1145d06e9a740017"
+}

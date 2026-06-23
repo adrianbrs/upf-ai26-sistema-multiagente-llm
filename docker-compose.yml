@@ -1,0 +1,72 @@
+services:
+  app:
+    build: .
+    container_name: multiagent_app
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - CHROMA_HOST=http://chromadb:8000
+    depends_on:
+      ollama:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+      ollama-init:
+        condition: service_completed_successfully
+    stdin_open: true # needed for interactive CLI (inquirer)
+    tty: true
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama_db
+    restart: always
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Uncomment the following to enable GPU support if you have nvidia runtime installed
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: ollama_init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      echo 'Verificando/Baixando modelos necessários (llama3.2:3b e nomic-embed-text)...' &&
+      ollama pull llama3.2:3b &&
+      ollama pull nomic-embed-text &&
+      echo 'Modelos prontos para uso!'
+      "
+
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chromadb
+    restart: always
+    volumes:
+      - chroma_data:/chroma/chroma
+    ports:
+      - "8000:8000"
+
+volumes:
+  ollama_data:
+  chroma_data:
