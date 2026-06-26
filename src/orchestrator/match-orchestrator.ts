@@ -36,7 +36,7 @@ export class MatchOrchestrator {
             // Step 5: Retrieve context from Vector DB (RAG)
             console.log(`\n--- [5] RAG (Recuperação de Contexto) ---`);
             const ragQuery = `${team1} vs ${team2} histórico de confrontos retrospecto`;
-            const ragContext = await vectorStore.query(ragQuery, 2);
+            const ragContext = await vectorStore.query(ragQuery, 1);
             if (ragContext && ragContext.length > 0) {
                 console.log(`> Contexto recuperado da base vetorial local.`);
                 console.log(`> Contexto: \n`, ragContext.join('\n'));

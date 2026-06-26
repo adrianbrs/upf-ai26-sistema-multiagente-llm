@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { extractRelevantContext } from '../../utils/fuzzy-search.js';
 
-export function registerScrapeDynamicTool(server: McpServer) {
+export function registerScrapeUrlTool(server: McpServer) {
     server.registerTool(
         "scrape_url",
         {
