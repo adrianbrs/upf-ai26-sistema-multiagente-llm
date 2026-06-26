@@ -1,4 +1,4 @@
-# ⚽ Sistema Multiagente de Previsão Esportiva (Futebol)
+# ⚽ Footure - Sistema Multiagente de Previsão Esportiva (Futebol)
 
 **Disciplina:** Inteligência Artificial\
 **Instituição:** Universidade de Passo Fundo (UPF)\
@@ -20,12 +20,12 @@ Desenvolver um sistema multiagente baseado em Inteligência Artificial Generativ
 O sistema é baseado na colaboração de **três agentes especializados**, coordenados pelo `MatchOrchestrator`:
 
 1. **📊 Agente de Estatísticas (StatsAgent)**
-   - **Papel:** Recuperador e Sintetizador de Dados Estruturados
-   - **Função:** Acessa a internet via MCP para buscar dados numéricos recentes sobre posse de bola, histórico de vitórias e desempenhos táticos das seleções. O LLM então resume isso em um relatório puramente estatístico.
+   - **Papel:** Recuperador e Sintetizador de Dados Estruturados.
+   - **Função e Ciclo de Iteração:** Opera de forma autônoma (loop de até 20 passos) analisando dados da base do StatsBomb via MCP. Segue um pipeline estrito: primeiro localiza as partidas do time (`find_team_matches`), depois extrai os eventos táticos e escalações (`statsbomb_query`), e finalmente sintetiza um relatório puramente estatístico (gols, posse de bola, desarmes).
 
 2. **🧠 Agente Quantificador de Sentimentos (QuantAgent)**
    - **Papel:** Analista Comportamental.
-   - **Função:** Busca notícias de última hora, lesões, declarações polêmicas ou crises. O LLM extrai o "sentimento" disso e converte em modificadores matemáticos estruturados em JSON (`attack_modifier`, `defense_modifier`, `morale_modifier`).
+   - **Função e Ciclo de Iteração:** Busca de forma autônoma na web (loop de até 15 passos) por notícias, lesões, declarações e crises recentes. Ele usa ferramentas de busca (`search`) e extração de páginas web (`scrape_url`), contextualiza as informações com a data atual e as converte em modificadores matemáticos (pesos entre -0.5 e +0.5) estruturados em JSON (`attack_modifier`, `defense_modifier`, `morale_modifier`, e um `reasoning`).
 
 3. **🔮 Agente Preditor Analista (PredictAgent)**
    - **Papel:** Tomador de Decisão Final.
@@ -36,11 +36,13 @@ O sistema é baseado na colaboração de **três agentes especializados**, coord
 ## 🛠️ Ferramentas (Tools) e Integração MCP
 
 ### **Protocolo MCP (Model Context Protocol)**
-A arquitetura utiliza o MCP para padronizar o acesso do LLM à internet de forma segura. Em vez de depender de APIs pagas (como Google Custom Search), o projeto implementa um **Servidor MCP Local (`src/mcp/local-search-server.ts`)**. 
-Esse servidor escuta requisições do SDK do MCP e expõe a ferramenta (Tool) de `search`, que atua como um Web Scraper.
+A arquitetura utiliza o MCP para padronizar o acesso do LLM à ferramentas locais e à internet de forma segura. Em vez de depender de APIs pagas, o projeto implementa um **Servidor MCP Local (`src/mcp/local-search-server.ts`)** e disponibiliza múltiplas tools (ferramentas) especializadas, permitindo que os agentes explorem os dados iterativamente.
 
-### **Descrição da Tool Disponível:**
-- `search(query: string)`: Faz uma requisição estruturada POST ao DuckDuckGo Lite (motor de busca focado em privacidade e livre de scripts bloqueadores), processa as tabelas HTML de resultados via Regex e devolve os *snippets* e textos mais relevantes.
+### **Descrição das Tools Disponíveis:**
+- `search(query, provider)`: Busca na web utilizando DuckDuckGo, Bing ou Google, processando resultados e devolvendo snippets relevantes.
+- `scrape_url(url, searchQuery)`: Acessa uma URL via Puppeteer, processa a página (ideal para sites dinâmicos em JS), extrai o texto limpo (removendo lixo visual) e permite buscas "fuzzy" para encontrar contextos específicos na página.
+- `statsbomb_query(path, searchQuery, offset, limit)`: Acessa dados da base aberta do StatsBomb no GitHub (competições, partidas, eventos, escalações). Possui recursos avançados como paginação e busca semântica em arquivos JSON densos para evitar estourar o contexto do LLM.
+- `find_team_matches(teamName)`: Utilitário para busca rápida de IDs de partidas de um time específico no índice local do StatsBomb, servindo de atalho para o *StatsAgent*.
 
 ---
 
@@ -160,3 +162,7 @@ RESULTADO FINAL DA PREVISÃO
 - **Busca não retorna resultados ou diz "bloqueado pelo motor de busca"**
   - **Motivo:** Web Scraping está sempre sujeito à flutuação.
   - **Solução:** Nesse caso seria preciso alterar o motor de busca utilizado no MCP.
+
+- **Erro no Puppeteer ("Could not find Chrome", "Failed to launch browser", etc)**
+  - **Motivo:** Ao rodar fora do Docker (Opção 2 - Desenvolvimento), o Puppeteer pode não encontrar o executável do Chrome/Chromium na máquina hospedeira.
+  - **Solução:** Você pode instalar o navegador que o Puppeteer precisa executando `npx puppeteer browsers install chrome` (ou `pnpm exec puppeteer browsers install chrome`). Alternativamente, é possível configurar o Puppeteer para utilizar um navegador já instalado no seu sistema, informando o caminho no `executablePath` nas opções de *launch*. Para mais detalhes sobre dependências faltantes, consulte a [documentação oficial de Troubleshooting do Puppeteer](https://pptr.dev/troubleshooting).

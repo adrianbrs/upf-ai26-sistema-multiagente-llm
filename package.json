@@ -9,9 +9,10 @@
     "build": "tsc",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
+    "docker:purge": "docker compose down -v",
     "docker:build": "docker compose up -d --build",
     "docker:infra": "docker compose up --wait ollama chromadb ollama-init",
-    "docker:cli": "docker attach multiagent_app",
+    "docker:cli": "docker exec -it multiagent_app pnpm start",
     "postinstall": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
