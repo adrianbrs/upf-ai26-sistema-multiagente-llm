@@ -13,19 +13,16 @@ export async function runCLI() {
 ================================================
 `);
 
-    let running = true;
-    while (running) {
+    while (true) {
         const team1 = await input({ message: 'Digite o nome do PRIMEIRO time/seleção (ou "sair" para encerrar):' });
-        
+
         if (team1.trim().toLowerCase() === 'sair') {
-            running = false;
             break;
         }
 
         const team2 = await input({ message: 'Digite o nome do SEGUNDO time/seleção:' });
 
         if (team2.trim().toLowerCase() === 'sair') {
-            running = false;
             break;
         }
 
@@ -39,7 +36,7 @@ export async function runCLI() {
         console.log("\n------------------------------------------------");
         const continuePrompt = await input({ message: 'Deseja analisar outra partida? (s/n):' });
         if (continuePrompt.trim().toLowerCase() !== 's') {
-            running = false;
+            break;
         }
     }
 

@@ -17,7 +17,25 @@ export class PredictAgent {
         console.log(`[PredictAgent] Consolidando dados e gerando previsão para ${team1} vs ${team2}...`);
 
         const systemPrompt = `Você é um analista mestre de previsões de futebol. Sua tarefa é analisar o embate entre dois times com base nos dados brutos, contexto subjetivo (modificadores) e dados históricos (se houver).
-        Você deve gerar um prognóstico da partida e terminar sua resposta OBVIAMENTE listando os 3 palpites finais (ex: placares ou cenários de vitória/empate), do MAIOR probabilidade para a MENOR probabilidade.`;
+        Você deve gerar um relatório FINAL e ESTRUTURADO da partida. Formate rigorosamente sua resposta em MARKDOWN seguindo esta estrutura:
+
+        # 🏆 Previsão: [Time 1] vs [Time 2]
+        
+        ## 🧠 Justificativa Detalhada
+        (Escreva aqui a sua análise tática, técnica e anímica do confronto)
+        
+        ## 📊 Probabilidade de Vitória
+        - **[Time 1]:** XX%
+        - **Empate:** XX%
+        - **[Time 2]:** XX%
+        
+        ## 🎯 Placar Final Previsto
+        **X - Y** (Favorável ao [Time vencedor ou Empate])
+        
+        ## 🔮 Cenários Alternativos
+        1. [Cenário 1]
+        2. [Cenário 2]
+        3. [Cenário 3]`;
 
         let contextSection = '';
         if (ragContext && ragContext.length > 0) {

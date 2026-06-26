@@ -11,14 +11,19 @@
     "docker:down": "docker compose down",
     "docker:build": "docker compose up -d --build",
     "docker:infra": "docker compose up --wait ollama chromadb ollama-init",
-    "docker:cli": "docker attach multiagent_app"
+    "docker:cli": "docker attach multiagent_app",
+    "postinstall": "npx puppeteer browsers install chrome"
   },
   "dependencies": {
     "@inquirer/prompts": "^5.3.8",
     "@modelcontextprotocol/sdk": "^1.0.1",
+    "cheerio": "^1.0.0",
     "chromadb": "^1.9.4",
     "dotenv": "^16.4.5",
-    "ollama": "^0.5.11"
+    "fuse.js": "^7.4.2",
+    "ollama": "^0.5.11",
+    "puppeteer": "^23.0.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^22.1.0",

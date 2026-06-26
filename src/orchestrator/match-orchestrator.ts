@@ -39,6 +39,7 @@ export class MatchOrchestrator {
             const ragContext = await vectorStore.query(ragQuery, 2);
             if (ragContext && ragContext.length > 0) {
                 console.log(`> Contexto recuperado da base vetorial local.`);
+                console.log(`> Contexto: \n`, ragContext.join('\n'));
             } else {
                 console.log(`> Nenhum contexto prévio encontrado no histórico.`);
             }
